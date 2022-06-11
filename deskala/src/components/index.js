@@ -1,3 +1,4 @@
 import { PrivateRoute } from "./PrivateRoute";
+import { CreateCandidateModal } from "./CreateCandidateModal";
 
-export { PrivateRoute };
+export { PrivateRoute, CreateCandidateModal };
