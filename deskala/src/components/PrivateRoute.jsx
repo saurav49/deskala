@@ -11,7 +11,7 @@ const PrivateRoute = ({ path }) => {
   }
 
   console.log({ token });
-  if (token) {
+  if (token.length > 0) {
     return <Outlet />;
   }
 

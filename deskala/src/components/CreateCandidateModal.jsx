@@ -1,6 +1,10 @@
 import { useState } from "react";
+import { useCandidate } from "../hooks/useCandidate";
+import { TailSpin } from "react-loader-spinner";
 
 const CreateCandidateModal = ({ setShowModal }) => {
+  const { createNewCandidate, candidateLoader, editCandidate, allCandidate } =
+    useCandidate();
   const allState = [
     "Andhra Pradesh",
     "Assam",
@@ -14,12 +18,21 @@ const CreateCandidateModal = ({ setShowModal }) => {
     "Manipur",
     "Tamil Nadu",
   ];
-  const [name, setName] = useState("");
-  const [address, setAddress] = useState("");
-  const [dob, setDob] = useState("");
-  const [state, setState] = useState("");
-  const [age, setAge] = useState("");
-  const [pincode, setPincode] = useState("");
+
+  let reqdCandidate = {};
+
+  if (localStorage.getItem("edit_candidate_id")) {
+    reqdCandidate = allCandidate.find(
+      (c) => c._id == JSON.parse(localStorage.getItem("edit_candidate_id"))
+    );
+  }
+
+  const [name, setName] = useState(reqdCandidate?.name || "");
+  const [address, setAddress] = useState(reqdCandidate?.address || "");
+  const [dob, setDob] = useState(reqdCandidate?.dob || "");
+  const [state, setState] = useState(reqdCandidate?.state || "");
+  const [age, setAge] = useState(reqdCandidate?.age || "");
+  const [pincode, setPincode] = useState(reqdCandidate?.pincode || "");
 
   const [error, setError] = useState({
     nameErr: "",
@@ -55,7 +68,7 @@ const CreateCandidateModal = ({ setShowModal }) => {
     if (state.length === 0) {
       setError((prevState) => ({
         ...prevState,
-        stateErr: "name cannot be empty",
+        stateErr: "State cannot be empty",
       }));
       return;
     }
@@ -66,13 +79,43 @@ const CreateCandidateModal = ({ setShowModal }) => {
       }));
       return;
     }
-    if (pincode.length === 0) {
+    if (pincode.length === 0 || pincode.length < 6) {
       setError((prevState) => ({
         ...prevState,
-        pinErr: "name cannot be empty",
+        pinErr: "Invalid pincode",
       }));
       return;
     }
+
+    localStorage.getItem("edit_candidate_id")
+      ? editCandidate(
+          JSON.parse(localStorage.getItem("edit_candidate_id")),
+          state,
+          parseInt(pincode),
+          dob,
+          parseInt(age),
+          address,
+          name
+        )
+      : createNewCandidate(
+          state,
+          parseInt(pincode),
+          dob,
+          parseInt(age),
+          address,
+          name
+        );
+
+    setError({
+      nameErr: "",
+      addrErr: "",
+      dobErr: "",
+      stateErr: "",
+      ageErr: "",
+      pinErr: "",
+    });
+
+    !candidateLoader && setShowModal(false);
   };
 
   return (
@@ -95,8 +138,8 @@ const CreateCandidateModal = ({ setShowModal }) => {
                 className="rounded p-2 border-2 border-gray-200"
                 placeholder="enter your name"
               />
-              {error.name && (
-                <p className="text-xs text-red-500 italic">{error.name}</p>
+              {error.nameErr && (
+                <p className="text-xs text-red-500 italic">{error.nameErr}</p>
               )}
             </div>
             <div className="flex flex-col items-start mt-5">
@@ -142,7 +185,7 @@ const CreateCandidateModal = ({ setShowModal }) => {
                 name="state"
                 id="state"
                 value={state}
-                className={styles.address__input}
+                className="rounded py-2 px-12 border-2 border-gray-200"
                 onChange={(e) => setState(e.target.value)}
               >
                 {allState.map((value, index) => {
@@ -210,9 +253,13 @@ const CreateCandidateModal = ({ setShowModal }) => {
           </button>
           <button
             className="py-4 px-10 text-white border-2 border-sky-500 bg-sky-500 mt-6 mb-4 rounded"
-            onClick={handleCandidateCreation}
+            onClick={() => handleCandidateCreation()}
           >
-            <span>Create</span>
+            {candidateLoader ? (
+              <TailSpin color="#fff" height={23} width={120} />
+            ) : (
+              <span>Create</span>
+            )}
           </button>
         </div>
       </div>

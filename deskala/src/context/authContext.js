@@ -1,12 +1,15 @@
 import { createContext, useState } from "react";
 import axios from "axios";
 import { LOGIN_URL, SIGNUP_URL } from "../urls";
+import { useNavigate } from "react-router-dom";
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState("");
+  const [currentEmail, setCurrentEmail] = useState("");
   const [authLoader, setAuthLoader] = useState(false);
+  const navigate = useNavigate();
 
   const handleSignup = async (email, phone, password) => {
     try {
@@ -17,11 +20,13 @@ export const AuthProvider = ({ children }) => {
         password,
       });
       if (response.data.success) {
+        setCurrentEmail(response.data.savedUser.email);
         setToken(response.data.savedUser.token);
         localStorage.setItem(
           "deskala__token",
           JSON.stringify(response.data.token)
         );
+        localStorage.setItem("deskala__email", response.data.savedUser.email);
         setAuthLoader(false);
       }
     } catch (error) {
@@ -35,11 +40,13 @@ export const AuthProvider = ({ children }) => {
       setAuthLoader(true);
       const response = await axios.post(LOGIN_URL, { email, password });
       if (response.data.success) {
+        setCurrentEmail(response.data.savedUser.email);
         setToken(response.data.savedUser.token);
         localStorage.setItem(
           "deskala__token",
           JSON.stringify(response.data.token)
         );
+        localStorage.setItem("deskala__email", response.data.savedUser.email);
         setAuthLoader(false);
       }
     } catch (error) {
@@ -50,8 +57,11 @@ export const AuthProvider = ({ children }) => {
 
   const handleLogout = () => {
     setToken("");
-    localStorage.removeItem("deskala__name");
+    localStorage.removeItem("edit_candidate_id");
     localStorage.removeItem("deskala__token");
+    setTimeout(() => {
+      navigate("/login");
+    }, 3000);
   };
 
   return (
@@ -64,6 +74,7 @@ export const AuthProvider = ({ children }) => {
         setToken,
         authLoader,
         setAuthLoader,
+        currentEmail,
       }}
     >
       {children}

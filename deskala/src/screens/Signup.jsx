@@ -17,24 +17,33 @@ const Signup = () => {
   const { handleSignup, authLoader } = useAuth();
 
   const handleUserCredentails = (email, phone, password) => {
-    if (!validateEmail(email))
+    if (!validateEmail(email)) {
       return setError((prevState) => ({
         ...prevState,
         emailError: "Enter valid email id",
       }));
-    if (!validatePhoneNumber(phone))
+    }
+    if (!validatePhoneNumber(phone)) {
       return setError((prevState) => ({
         ...prevState,
         phoneError: "Enter valid Phone Number",
       }));
-    if (!validatePassword(password))
+    }
+    if (!validatePassword(password)) {
       return setError((prevState) => ({
         ...prevState,
         passError:
           "Password should be contain at least One Uppercase , One lowercase, One Numeric, One Special Character",
       }));
+    }
 
     handleSignup(email, phone, password);
+
+    setError({
+      emailError: "",
+      phoneError: "",
+      passError: "",
+    });
 
     setEmail("");
     setPassword("");
