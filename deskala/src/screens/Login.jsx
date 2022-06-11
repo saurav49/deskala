@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useAuth } from "../hooks/useAuth";
+import { TailSpin } from "react-loader-spinner";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -9,7 +11,29 @@ const Login = () => {
     passError: "",
   });
 
-  const handleLogin = () => {};
+  const { handleLogin, authLoader } = useAuth();
+
+  const handleUserCredentails = (email, password) => {
+    if (email.length === 0) {
+      setError((prevState) => ({
+        ...prevState,
+        emailError: "email field cannot be empty",
+      }));
+      return;
+    }
+    if (password.length === 0) {
+      setError((prevState) => ({
+        ...prevState,
+        passError: "password field cannot be empty",
+      }));
+      return;
+    }
+
+    handleLogin(email, password);
+
+    setEmail("");
+    setPassword("");
+  };
 
   return (
     <div className="shadow-md rounded px-2 py-6 flex flex-col items-center justify-center w-[300px] transition duration-300 sm:w-[400px] bg-white">
@@ -51,9 +75,13 @@ const Login = () => {
       </div>
       <button
         className="py-4 px-10 text-white bg-sky-500 mt-6 mb-4 rounded"
-        onClick={() => handleLogin()}
+        onClick={() => handleUserCredentails(email, password)}
       >
-        Login
+        {authLoader ? (
+          <TailSpin color="#fff" height={23} width={120} />
+        ) : (
+          <span>Login</span>
+        )}
       </button>
     </div>
   );

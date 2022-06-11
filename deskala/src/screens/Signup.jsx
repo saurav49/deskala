@@ -1,4 +1,7 @@
 import { useState } from "react";
+import { validateEmail, validatePassword, validatePhoneNumber } from "../utils";
+import { useAuth } from "../hooks/useAuth";
+import { TailSpin } from "react-loader-spinner";
 
 const Signup = () => {
   const [email, setEmail] = useState("");
@@ -11,7 +14,32 @@ const Signup = () => {
     passError: "",
   });
 
-  const handleSignUp = () => {};
+  const { handleSignup, authLoader } = useAuth();
+
+  const handleUserCredentails = (email, phone, password) => {
+    if (!validateEmail(email))
+      return setError((prevState) => ({
+        ...prevState,
+        emailError: "Enter valid email id",
+      }));
+    if (!validatePhoneNumber(phone))
+      return setError((prevState) => ({
+        ...prevState,
+        phoneError: "Enter valid Phone Number",
+      }));
+    if (!validatePassword(password))
+      return setError((prevState) => ({
+        ...prevState,
+        passError:
+          "Password should be contain at least One Uppercase , One lowercase, One Numeric, One Special Character",
+      }));
+
+    handleSignup(email, phone, password);
+
+    setEmail("");
+    setPassword("");
+    setPhone("");
+  };
 
   return (
     <div className="shadow-md rounded px-2 py-6 flex flex-col items-center justify-center w-[300px] transition duration-300 sm:w-[400px] bg-white">
@@ -69,9 +97,13 @@ const Signup = () => {
       </div>
       <button
         className="py-4 px-10 text-white bg-sky-500 mt-6 mb-4 rounded"
-        onClick={() => handleSignUp()}
+        onClick={() => handleUserCredentails(email, phone, password)}
       >
-        Sign Up
+        {authLoader ? (
+          <TailSpin color="#fff" height={23} width={120} />
+        ) : (
+          <span>Sign Up</span>
+        )}
       </button>
     </div>
   );
