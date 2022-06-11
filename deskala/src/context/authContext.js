@@ -32,7 +32,6 @@ export const AuthProvider = ({ children }) => {
 
   const handleLogin = async (email, password) => {
     try {
-      setLoginFail(false);
       setAuthLoader(true);
       const response = await axios.post(LOGIN_URL, { email, password });
       if (response.data.success) {

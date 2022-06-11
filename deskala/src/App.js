@@ -1,6 +1,7 @@
 import "./App.css";
 import { Routes, Route } from "react-router-dom";
-import { Login, Signup } from "./screens/index";
+import { Login, Signup, Home } from "./screens/index";
+import { PrivateRoute } from "./components/index";
 
 function App() {
   return (
@@ -9,6 +10,9 @@ function App() {
         Deskala - Assignment
       </h1>
       <Routes>
+        <Route path="/" element={<PrivateRoute />}>
+          <Route path="/" element={<Home />} />
+        </Route>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
       </Routes>
