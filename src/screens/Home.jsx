@@ -7,7 +7,6 @@ import axios from "axios";
 import { CANDIDATE_URL } from "../urls";
 
 const Home = () => {
-  const allStatus = ["Shortlist", "Rejected"];
   const { getAllCandidates, allCandidate, deleteCandidate, setAllCandidate } =
     useCandidate();
   const { currentEmail } = useAuth();
@@ -16,6 +15,7 @@ const Home = () => {
 
   useEffect(() => {
     getAllCandidates();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

@@ -20,7 +20,7 @@ const CreateCandidateModal = ({ setShowModal }) => {
   ];
 
   let reqdCandidate = {};
-
+  /*eslint eqeqeq: "off"*/
   if (localStorage.getItem("edit_candidate_id")) {
     reqdCandidate = allCandidate.find(
       (c) => c._id == JSON.parse(localStorage.getItem("edit_candidate_id"))
